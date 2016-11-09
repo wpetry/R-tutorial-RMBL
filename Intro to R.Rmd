@@ -1,0 +1,528 @@
+---
+title: "CEB Internship R Workshop"
+author: "Will Petry"
+date: "April 2015"
+output: html_document
+---
+
+What we'll cover
+--------------------------------------------------------
+*To use this tutorial, [download and install R](http://cran.r-project.org/) first.  Then [download and install RStudio](http://www.rstudio.com/products/rstudio/download/). Java also needs to be up-to-date for full functionality*
+
+1. [Introduction and tutorial orientation](#intro)
+2. [R - the language, the program, the Studio](#r)
+3. [Conversing with R](#conv)
+4. [Adding new functions](#fxn)
+5. [Importing data](#datain)
+6. [Data wrangling](#handle)
+7. [Basic data analysis](#analysis)
+8. [Exercise](#combo)
+
+<a id="intro"></a>1. Introduction and tutorial orientation
+--------------------------------------------------------
+> "R has a steep learning curve.  The biggest stumbling block was thinking that R is hard."
+--- *Patrick Burns*
+
+>  "Programs like SPSS are busses, easy to use for the standard things, but very
+frustrating if you want to do something that is not already preprogrammed.
+R is a 4-wheel drive SUV (though environmentally friendly) with a bike on the back, a kayak on top,
+good walking and running shoes in the passenger seat, and mountain climbing and spelunking
+gear in the back. R can take you anywhere you want to go if you take time to learn how to use
+the equipment, but that is going to take longer than learning where the bus stops are in SPSS."
+--- *Greg Snow*
+
+R is a programming language for statistical analysis and data visualization. R is rapidly growing in popularity in part because R is:
+
+* free
+* open-source
+* accommodating of new analyses
+
+This tutorial will walk you through the basics of how to use R, weaving together explanatory text and code. Explanatory text is in black and code chunks feature *syntactical highlighting* to make it more reader friendly. Code chunks look like this:
+
+```{r example chunk}
+# comments and annotations will be preceded with the pound sign
+# real code will look like this with the output from R immediately following:
+2+2
+x <- rnorm(n = 100, mean = 5, sd = 1.7)
+# plots are also displayed immediately after the code used to generate them, here a histogram
+hist(x)
+```
+
+<a id="r"></a>2. R -- the language, the program, the Studio
+--------------------------------------------------------
+**R** is both a programming language and a program used to compose and run scripts. R the program looks more or less like a blank white screen and can be a bit daunting to those used to interacting with computers through point-and-click. RStudio makes the transition to R more gentle. RStudio is a **G**raphical **U**ser **I**nterface (**GUI**, pronounced 'gooey') -- a user-friendly control panel to do all things R. It is also free and has become the *de facto* R GUI. For this tutorial, we'll interact with R exclusively through RStudio.
+
+Here's what RStudio looks like:
+
+![Image of RStudio](http://i.imgur.com/CMBrtl.jpg)
+
+**NOTE:** If you don't have two panels on the left side already, click on the white square with a plus in the top left corner, and select 'R script' from the menu.
+
+By default the arrangement is (clockwise from the top left):
+
+* Source
+* Environment/History:
+* Files/Plots/Packages/Help/etc.
+* Console
+
+Each of these panels has a suite of tools to make your data analysis easier and more organized.  Let's run through each of these (in a more natural order for explaning what each does):
+
+### 2.1 Console (lower left)
+This pane is all you'd see if you opened up R alone --- the console is the star and could do everything on its own, but the other three panels make an excellent supporting cast. At start-up, you'll see the welcome text from R reporting which version you're using and offering a few tips. Below that, you'll see a ```>``` character and blinking cursor, meaning that R is ready for our commands.
+
+Commands can be typed directly into the Console, and hitting Enter/Return will run the command. Let's give it a try with a [simple but profound command](http://en.wikipedia.org/wiki/Hello_world_program).
+
+```{r}
+print("Hello world")
+```
+
+Notice that RStudio helps out by automatically inserting the close quote and close parenthesis. If we were sloppy and left one out, R wouldn't know how to handle it. Try deleting the ```)```.
+
+```{r, eval = FALSE}
+print("Hello world"
+```
+
+That ```+``` sign instead of the ```>``` means that R is expecting us to finish our statement. We can either finish what we started by typing ```)`` and hitting Enter/Return again, or we can use the Esc key to quit the current operation and start over with a fresh line.
+
+*Pro tip:* If your console becomes too cluttered, move the cursor down there and press Ctrl + l to clear everything away.
+
+### 2.2 Source (top left)
+Typing commands directly into the console is great for a quick and dirty run of your code. But usually a data analysis involves hundreds (or thousands) of lines of code. Entering each one at a time would be tedious and error-prone. The Source pane serves as a basic text editor with a few extra features that make this integration with the console smooth and simple.
+
+Let's try a multi-line script that does some simple math on a set of numbers. Again, don't worry about the specifics here, this is just to show the value of using the Source panel.
+
+```{r source demo, eval = FALSE}
+print("Here are my numbers:")
+c(1, 4, 6, 7, 8, 9, 12)
+```
+
+Hitting enter goes to the next line of the Source pane, but doesn't run any of the code (i.e. nothing new shows up in the Console). We can go on to write more lines of code before running. Let's add another few statement to the Source pane on lines 2 and 3:
+
+```{r source demo 2, eval = FALSE}
+print("Here are my numbers divided in half:")
+c(1, 4, 6, 7, 8, 9, 12)/2
+```
+
+To run these lines, simply highlight both of them and press the 'Run' button on the top right of the Source pane. Alternatively, we can run one line at a time by highlighting it or skip highlighting by moving the cursor anywhere on the line we want to run and pressing 'Run'.
+
+### 2.3 Environment/History (upper right)
+This pane shows a record of all of the data that we've asked R to remember (Environment) and a running list of everything we've typed into the Console or sent to the Console from the Source pane (History). I usually keep my Environment tab displayed to keep track of what I've named all the pieces of data I am using in an analysis, what type of data they are, and how big they are. Like the Console, this too can be cleared entirely by clicking the 'Clear' button or selectively by checking which objects to remove.
+
+Double clicking any of the commands in the History tab will run that command in the Console again. You can also access this list directly from the Console by simply using the up/down arrow keys. This is very useful if you need to correct a typo or re-import data.
+
+### 2.4 Miscellaneous tabs (lower right)
+This pane is the catch all for other helpful RStudio features. Files can be used just like Windows Explorer or Mac's Finder to navigate your computer. Plots shows any graphics you produce. The Packages pane lists the add-on code installed and loaded on your computer (more on this later). Help provides a way to browse the help documentation.
+
+<a id="conv"></a>3. Conversing with R
+--------------------------------------------------------
+We've covered the basics of how to tell R to do something, but R forgets everything that we've said right after it returns the output of these commands. This isn't very helpful, especially when data analysis is bound to take several steps to get from data import to the final output. This section covers how to carry on a conversation with R where the output of previous commands is remembered and can be accessed later on.
+
+### 3.1 Assignment
+Everything we want R to remember must be given a name. A simple symbol, ```<-```, is used to connect the name (on the side to which the arrow is pointing) and the result of the command (aka object, on the other end of the arrow). Reading this:
+
+```{r assignment}
+x <- "Hello world"
+```
+
+as a sentence would sound like "x *is set to* Hello world." Go ahead and run this assignment command to set ```x``` to ```"Hello world"```.
+
+We can make vectors containing multiple values by using the concatenation command:
+
+```{r concat}
+y <- c(1,2,3,4,5,6,7,8,9,10)
+z <- c("a","b","c","d","e","f")
+```
+
+To display the contents of these objects, we can use the ```print()``` command, or simply type it's name:
+```{r printing}
+print(y)
+z
+```
+
+**Note:** Some tutorials will offer the alternative of ```=``` for assigning names to objects. This works just as well in *most* cases, but has the potential to cause confusion for reasons we won't get into here. It's a good idea to get into the habit of using ```<-``` for all name assignments.
+
+### 3.2 Object classes and functions
+Objects are pieces of data and functions do things to these data and return other objects that hold the output. To use an analogy to language, objects are like subjects and functions are like verbs. Like spoken languages where subjects and their verbs must agree, in R objects must be compatible with the function applied to it.
+
+Objects can be of many different types. We call these different forms classes, and the object's class will limit which functions can be used on it. For example, trying to multiply ```"Hello world"``` by ```3``` is nonsensical, and R will return an error if you try. We can easily determine the class of an object like this:
+```{r class}
+class(x)
+```
+
+Here, ```character``` means that this object is made up of text. Here are some other basic classes of objects you'll encounter:
+
+Class name     What it holds
+-------------  --------------------------------------------------------
+character      text
+numeric        numbers (can be decimal)
+integer        numbers (only integers)
+boolean        true or false
+factor         categorical data
+dataframe      data table (can contain variables of multiple classes)
+matrix         a 2-dimensional matrix (data are all of the same class)
+array          an n-dimensional matrix (data are all of the same class)
+list           a collection of multiple objects of one or more classes
+-------------  --------------------------------------------------------
+
+Additionally, each type of analysis will return an object of its own class. For example, an ANOVA will return an object of class ```aov``` and a simple linear regression will return an object of class ```lm```. Unlike spoken languages, applying a function to an object of one class can result in a very produce an object of a very different class (e.g. the data going into an ANOVA or regression is often ```numeric```, ```factor```, or ```dataframe```).
+
+There is one time you're likely to run into problems with an object's class: importing data. When we get to that section of the tutorial, we'll see how to get around any problems with this using coercion. For now, suffice it to say there are lots of different ways that R can store data, functions can usually only work with a subset of these data classes, and functions may return a different class of object than the object to which the function was applied.
+
+### 3.3 Simple manipulation of numbers
+R uses all of the conventional symbols for basic arithmetic and logical operators.
+
+Operation                 Symbol in R
+------------------------  -------------
+Addition                  ```+```
+Subtraction               ```-```
+Multiplication            ```*```
+Division                  ```/```
+Exponents                 ```^``` or ```**```
+Less than                 ```<```
+Greater than              ```>```
+Less than or equal to     ```<=```
+Greater than or equal to  ```>=```
+Equal to                  ```==```
+Not equal to              ```!=```
+Or                        ```|```
+And                       ```&```
+
+What's nice about these functions is that they are not just limited to single values. Rather, they can be applied over whole vectors, dataframes, and matrices. For example,
+
+```{r functions across multiple values}
+# take a look at the vector of integers we've named y and check what class it is
+y
+class(y)
+# now multiply everything by 3
+y_mult <- y*3
+y_mult
+# we can also logically test whether something is true across a whole vector
+# (useful later to extract parts of a dataset)
+y_mult_tf <- y_mult > 7.5
+y_mult_tf
+# R guesses the correct class of data held in the new object
+class(y_mult_tf)
+```
+
+<a id="fxn"></a>4. Functions
+--------------------------------------------------------
+In the previous section, we used assignment to create objects of various classes. R will store your data and results as objects --- the bridge between the two are functions. Functions do things to the data stored in objects, but won't change those data unless you ask it to. We've already used a few functions to concatenate a series of number (```c```), display an object (```print```), and return the object's class (```class```). R has a huge number of functions built right in, but also allows more to be added in.
+
+### 4.1 Packages
+R users (aka useRs) building multiple functions will often share their work by publishing a package on CRAN (http://cran.r-project.org). These packages expand the capabilities of R, and there are currently >6000 packages available for download (+1000 from when I gave this workshop in summer 2014).
+
+Frankly, the best way to sort through all of these is to use Google. A few suggested packages that I've found very useful for general data analysis are included at the end of these notes.
+
+The first step is to download the package to your computer. On the 'Packages' tab, click 'Install Packages' and type in the name of the package you want. Let's download a couple at once that we'll use later:
+
+* **car**
+* **effects**
+* **xlsx**
+
+![Installing packages in RStudio](InstallPackages.png)
+
+Make sure 'Install dependencies' is checked, and click install. Now these packages are on your computer, but aren't usable just yet. You'll need to click the check box next to the package name on the 'Packages' tab or use the ```library()``` command.
+
+```{r load packages}
+library(car)
+library(effects)
+library(xlsx)
+```
+
+You'll see that a few other companion packages are simultaneously loaded that hold functions used by the package you want. This nested doll approach is much easier than reinventing the wheel each time. Also notice that if the contents of different packages have objects with the same name, R will "mask" the object(s) loaded earlier and assume the most recently loaded package "owns" that shared name.
+
+### 4.2 Writing functions
+One really great aspect of R is that you can write your own functions. Not everything can be found in a pre-existing package, and writing a function can save you from copying lines of code over and over again.
+
+One function that is strangely absent from the base version of R is the calculation for standard error of the mean (SEM or just SE). Many of you may know that the SE for a sample is calculated as: 
+$$SE = \frac{s}{\sqrt n}$$
+where ***s*** is the sample standard deviation and ***n*** is the sample size. Let's have a look at the syntax of function building:
+
+```{r standard error}
+# Let's start by considering three built-in functions:
+# 1) sd(x) calculates the standard deviation of the vector x
+# 2) sqrt(y) returns the square root of the number y
+# 3) length(z) counts the number of elements in the vector z
+
+SE <- function(x){
+  # any intermediate calculations and data handling goes here
+  # in this case, the function is simple enough to write on one line. We'll wrap it inside the 
+  # return() function so that this function spits out the result of the enclosed calculation.
+  return(sd(x, na.rm=T)/sqrt(length(!is.na(x))))
+}
+```
+
+Note that here we have nested several functions within one another. R will interpret this starting with the inner most function, then applying subsequent functions to the output of the previous function. This is a really powerful feature of the R language that allows you to accomplish multiple steps at once. As a beginner, it may be best to calculate all these steps as intermediates and check their accuracy before putting everything together.
+
+A quick check of our function shows us that it is working correctly:
+```{r SE example}
+# here's the vector that we want to know the standard error of:
+y_mult
+SE(y_mult)
+```
+
+<a id="datain"></a>5. Importing data
+--------------------------------------------------------
+So far we've typed in data by hand for all of our interaction with R. In the real world of data analysis, this is impractical. R can read in data in a number of formats, and we'll walk through a few types of files.
+
+The first step to any data import is to tell R where to look for files on your computer. Each file has an address much like a street address. Saying my favorite restaurant is at number 306 doesn't help unless we've specified the street to look on. The same goes for knowing the city --- there are a lot of 306 Main Street across the country. R calls the address a **working directory**. Setting the working directory is easy.
+
+* Navigate into the folder containing your data using the 'Files' tab (lower right)
+* Click the 'More' dropdown menu, then 'Set As Working Directory'.
+
+![Files panel](FilesPane.png)
+
+All this does is send a command to the R console --- it's another helper function from RStudio.
+
+### 5.1 CSV (comma separated values)
+Let's pull in a CSV file that has (made up) data about cactus wren nest success.
+```{r read.csv}
+wren_nests <- read.csv("CactusWrenNests.csv")
+```
+
+Now an object called ```wren_nests``` shows up on the 'Environment' pane.
+
+### 5.2 Excel spreadsheets
+R knows how to understand a number of file types --- CSV importing is build right in --- but proprietary formats like Excel files are not within this repertoire. Importing these files requires an extra step: loading a package that will serve as an interpreter between R and the program that created the file.
+
+```{r read.xlsx}
+library(xlsx)  # loads the package that lets R speak Excel
+wren_ages <- read.xlsx("CactusWrenAges.xlsx", sheetName = "Bird_ages", header = TRUE)
+```
+
+Again, the object we created shows up in the 'Environment' pane.
+
+<a id="handle"></a>6. Data wrangling
+--------------------------------------------------------
+### 6.1 Data viewing
+A good practice to follow immediately after data import is to examine your data to ensure that:
+
+* the file imported correctly
+* the variables are of the right class
+
+There are a couple of tools to help you do this. First, we can click the table icon listed after the name in the 'Environment' pane. Another way is to use the following code:
+```{r eval=FALSE}
+View(wren_ages)
+```
+
+But this doesn't tell us how R is interpretting each piece of data. A key function to add to your toolkit is ```str```.
+```{r str}
+str(wren_nests)
+str(wren_ages)
+```
+
+Instead of showing all the data, this function distills down each variable name, size, class, and a short preview.
+
+### 6.2 Fixing import problems
+We can spot one probelm in ```wren_ages``` right away --- the variable ```male_age``` has imported as a factor. We can subset ```wren_ages``` to only look at the values in this column using the ```$``` operator.
+```{r subset}
+wren_ages$male_age
+```
+Entry number 11 is ```unknown```. This text has triggered R to think that this variable is a categorical factor, rather than a number. All we need to do is recode this value, and we can do this easily in R while learning some more subsetting tricks.
+```{r subset2}
+# first, get just the 11th value of "male_age" in "wren_ages"; we'll print it out just to make
+# sure that it's the one we want
+wren_ages$male_age[11]
+```
+
+```{r subset2b}
+# adding a simple assignment changes this value
+wren_ages$male_age[11] <- NA
+```
+
+```{r subset2c}
+# but something is still amiss -- "male_age" still shows up as a factor
+str(wren_ages)
+```
+
+```{r subset2d}
+# NA is a value compatible with factors, so R sticks with how it previously classified "male_age"
+# we'll coerce that factor into a numeric vector
+wren_ages$male_age <- as.numeric(wren_ages$male_age)
+str(wren_ages)
+```
+
+### 6.3 Merging datasets
+We've imported two datasets that have different pieces of information, but that nests were entered in a different order. R has an easy way of sticking these datasets together and seamlessly match entries by an ID variable.
+```{r merge}
+head(wren_nests)
+head(wren_ages)
+
+wren_merge <- merge(wren_ages, wren_nests, by = "nest_id")
+str(wren_merge)
+```
+
+<a id="analysis"></a>7. Basic data analysis
+--------------------------------------------------------
+Each statistical analysis has its own function, but once you learn one or two it becomes clear that each is just a modification of the same theme.
+
+### 7.1 t-test
+We'll start off with a simple t-test to ask whether the mean age of each sex differs in Southern California:
+```{r t-test}
+t.test(wren_merge$female_age, wren_merge$male_age, var.equal = TRUE)
+
+mean(wren_merge$female_age, na.rm = TRUE)
+mean(wren_merge$male_age, na.rm = TRUE)
+```
+
+### 7.2 Correlation
+Next we'll use a correlation test to test whether the ages of nesting pairs are correlated:
+```{r correlation}
+cor.test(wren_merge$female_age, wren_merge$male_age)
+```
+
+R doesn't only give numerical output, it can make plots.
+```{r corr plot}
+plot(female_age ~ male_age, data = wren_merge)
+```
+
+The basic plots of R are pretty clunky to work with and the defaults aren't glamorous. A full introduction to R graphics is beyond the scope of this tutorial.
+
+### 7.3 Regression, linear and logistic
+First, we'll ask whether the ages of a nesting pair influence the size of territory they occupy:
+
+```{r linear regression}
+# Linear regression uses the function lm()
+terr_age_mod <- lm(territory_size ~ female_age * male_age, data = wren_merge)
+summary(terr_age_mod)
+
+library(car)
+Anova(terr_age_mod, type = "III")
+
+library(effects)
+plot(effect(term = "female_age", mod = terr_age_mod)) # effect of female age, all else held constant
+plot(effect(term = "male_age", mod = terr_age_mod))   # effect of male age, all else held constant
+```
+
+Now we'll use a logistic regression to ask whether fledgling sucess if affected by territory size and the size of the plant used for nesting:
+
+```{r logistic regression}
+# Logistic regression (and other generalized linear models) use a similar function, glm()
+fledge_mod <- glm(fledge_success ~ territory_size + cactus_size, family = binomial,
+                  data = wren_merge)
+summary(fledge_mod)
+Anova(fledge_mod, type = "III")
+
+plot(effect(term = "territory_size", mod = fledge_mod))
+plot(effect(term = "cactus_size", mod = fledge_mod))
+```
+
+### 7.4 ANOVA
+Finally, we'll ask whether territory sizes differ among the three sites where data were collected:
+
+```{r ANOVA}
+sitedif_mod <- aov(territory_size ~ site, data = wren_merge)
+summary(sitedif_mod)
+Anova(sitedif_mod, type = "III")
+
+summary(effect(term = "site", mod = sitedif_mod))
+```
+
+<a id="combo"></a>8. Excercise
+--------------------------------------------------------
+Now it's time to put these skills to the test. Your assignment is to use ANOVA to test for the effect of non-native grasses on the performance of the California native plant *Cryptantha muricata*. These data come from a recent publication from the nearby San Dimas Experimental Forest (Pec & Carlton 2014). Use the [file "pec_carlton_biomass_allocation_data.csv" available on Dryad](http://dx.doi.org/10.5061/dryad.44gk7).
+
+![*Cryptantha muricata*](http://nathistoc.bio.uci.edu/plants/Boraginaceae/Cryptantha%20muricata%20var.%20jonesii/Cryptantha%20muricata3.jpg)
+
+*Photo from [Peter Bryant's Natural History of Orange County](http://nathistoc.bio.uci.edu/)*
+
+***To do:***
+
+* ***Import the data and fix any problems***
+* ***Run the ANOVA and follow-up tests***
+* ***Calculate marginal effects***
+* ***Make a graph to display the results***
+
+Answers are included in an appendix at the end of the tutorial.
+
+Bibliography
+--------------------------------------------------------
+I am indebted to the people and groups listed below --- this tutorial wouldn't be possible without them. Each of these are excellent and cover a slightly different set of materials, all well worth a read.
+
+* Benjamin Blonder's 'An Introduction to R for Ecologists' -- http://www.benjaminblonder.org/rworkshop/
+* Josh Grinath and Zak Gezon's R tutorials run at the Rocky Mountain Biological Laboratory in 2012 & 2013
+* stackoverflow -- http://stackoverflow.com/questions/tagged/?tagnames=r&sort=active
+* QuickR -- http://www.statmethods.net
+* The R Book -- http://www.wiley.com/WileyCDA/WileyTitle/productCd-0470973927.html
+* An Introduction to R -- http://cran.r-project.org/doc/manuals/R-intro.pdf
+* R Language Definition -- http://cran.r-project.org/doc/manuals/r-release/R-lang.html
+
+Data in the exercise are from:
+Pec G.J., G.C. Carlton (2014). Positive effects of non-native grasses on the growth of a native annual in a southern California ecosystem. PLoS ONE 9(11): e112437. doi:10.1371/journal.pone.0112437 & doi:10.5061/dryad.44gk7
+
+Appendix A -- My core list of favorite packages
+--------------------------------------------------------
+Below is a list of packages I count among my personal favorites.
+
+Package name  | Brief description
+------------- | ----------------------------------------------------
+car           | Helper functions for regression and ANOVA
+deSolve       | Solves differential equations
+dismo         | Species distribution modeling
+dplyr         | Data manipulation language tools
+effects       | Calculation of model effects
+gdata         | Data import/export utilities
+ggplot2       | Publication quality and highly customizable graphics
+IPMpack       | Integral projection model construction and diagnostics
+knitr         | Used to render this tutorial from a mix of Rmarkdown, plain text, and R code
+lme4          | Analysis of mixed effect models
+nlme          | Analysis of mixed effect models
+popbio        | Analysis of matrix population models
+Rcpp          | Blazing fast performance upgrade by passing code to C and C++
+reshape2      | Data reorganization
+sp            | Spatial analyses
+vegan         | Ordination techniques for community analysis
+wesanderson   | Wes Anderson color palette generator
+xlsx          | Data import/export between R and Microsoft Excel
+
+Appendix B -- Exercise answers
+--------------------------------------------------------
+*** Step 1: Import the data
+```{r import}
+# Remember to set the working directory to the folder with these data (manually or by code)
+
+# Import the data with read.csv()
+crypt_data <- read.csv("pec_carlton_biomass_allocation_data.csv")
+```
+
+*** Step 2: Check for import errors
+```{r error check}
+str(crypt_data)
+```
+
+*** Step 3: Build the ANOVA model
+```{r anova}
+crypt_mod <- aov(reproductive_biomass ~ treatment + site, data = crypt_data)
+```
+
+*** Step 4: Analyze the model
+```{r model analysis}
+library(car)
+summary(crypt_mod) # "wrong" p-value for treatment!
+Anova(crypt_mod, type = "III")
+```
+
+*** Step 5: Follow-up tests and plots
+```{r followup}
+library(effects)
+# get the effect of treatment averaged across the two sites
+trt.effect <- effect("treatment", crypt_mod)
+summary(trt.effect)
+```
+
+Using the ```effects``` package graphics:
+```{r effect plot}
+plot(trt.effect)
+```
+
+Using ```ggplot2``` graphics:
+```{r ggplot}
+# first install the package 'ggplot2' using the 'Packages' pane on the lower right
+library(ggplot2)
+
+cryptbar <- ggplot(data = crypt_data, aes(x = treatment, y = reproductive_biomass)) +
+  geom_bar(stat = "identity") +
+  theme_classic()
+cryptbar
+```
+
